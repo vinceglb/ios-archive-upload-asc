@@ -6,6 +6,7 @@ Composite GitHub Action to archive an iOS app, export an `.ipa`, and upload it t
 
 - Runner: `macos-14` (or newer macOS runner with Xcode).
 - App Store Connect API key with permissions for build upload and provisioning updates.
+- For cloud signing/export (`xcodebuild -allowProvisioningUpdates`), the API key must have **Admin** permissions in App Store Connect.
 - Project configured for automatic signing.
 
 ## Inputs
@@ -88,6 +89,7 @@ jobs:
 - Signing/provisioning failures during archive/export
   - Confirm automatic signing is enabled for the target and `asc_team_id` is correct.
   - Confirm bundle ID is registered under the team.
+  - If you see `Cloud signing permission error`, use an App Store Connect API key with **Admin** permissions.
 - `Bundle ID mismatch`
   - The archive’s bundle identifier does not match `bundle_id`.
   - Check the scheme/target and input value.
