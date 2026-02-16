@@ -2,12 +2,36 @@
 
 Composite GitHub Action to archive an iOS app, export an `.ipa`, and upload it to App Store Connect using [`asc`](https://github.com/rudrankriyam/App-Store-Connect-CLI).
 
+## Quick Start (5 minutes)
+
+1. Create an App Store Connect API key (Admin role for cloud signing)
+- Guide: [`docs/app-store-connect-api-key.md`](docs/app-store-connect-api-key.md)
+
+2. Install setup CLI globally
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/vinceglb/ios-archive-upload-asc/main/scripts/install-ios-gha-setup.sh | sh
+```
+
+3. Run guided onboarding from your app repository
+
+```bash
+ios-gha-setup wizard
+```
+
+The wizard guides step-by-step, auto-prefills from local git/Xcode context, validates ASC credentials, and can resume interrupted setup without persisting secrets.
+
+## DX Setup Docs
+
+- API key creation guide: [`docs/app-store-connect-api-key.md`](docs/app-store-connect-api-key.md)
+- Setup CLI guide: [`docs/ios-gha-setup.md`](docs/ios-gha-setup.md)
+
 ## Requirements
 
-- Runner: `macos-14` (or newer macOS runner with Xcode).
-- App Store Connect API key with permissions for build upload and provisioning updates.
-- For cloud signing/export (`xcodebuild -allowProvisioningUpdates`), the API key must have **Admin** permissions in App Store Connect.
-- Project configured for automatic signing.
+- Runner: `macos-14` (or newer macOS runner with Xcode)
+- API key with permissions for build upload/provisioning updates
+- For cloud signing/export (`xcodebuild -allowProvisioningUpdates`), API key role must be **Admin**
+- Project configured for automatic signing
 
 ## Inputs
 
@@ -18,7 +42,7 @@ Composite GitHub Action to archive an iOS app, export an `.ipa`, and upload it t
 | `workspace` | Path to the `.xcworkspace` file or directory. |
 | `scheme` | Xcode scheme to archive. |
 | `app_id` | App Store Connect app ID. |
-| `bundle_id` | Expected bundle identifier for validation against the archive. |
+| `bundle_id` | Expected bundle identifier for validation against archive output. |
 | `asc_key_id` | App Store Connect API Key ID. |
 | `asc_issuer_id` | App Store Connect API Issuer ID. |
 | `asc_private_key_b64` | Base64-encoded `.p8` private key content. |
@@ -62,36 +86,43 @@ jobs:
 
       - name: Archive, export and upload
         id: ios_upload
-        uses: ga-vince/ios-archive-upload-asc@v1
+        uses: vinceglb/ios-archive-upload-asc@main
         with:
-          workspace: MyApp.xcworkspace
-          scheme: MyApp
+          workspace: ios/App.xcworkspace
+          scheme: App
           app_id: ${{ vars.ASC_APP_ID }}
-          bundle_id: com.example.myapp
+          bundle_id: com.example.app
           asc_key_id: ${{ secrets.ASC_KEY_ID }}
           asc_issuer_id: ${{ secrets.ASC_ISSUER_ID }}
           asc_private_key_b64: ${{ secrets.ASC_PRIVATE_KEY_B64 }}
           asc_team_id: ${{ secrets.ASC_TEAM_ID }}
           wait_for_processing: "true"
-
-      - name: Print outputs
-        run: |
-          echo "Archive: ${{ steps.ios_upload.outputs.archive_path }}"
-          echo "IPA: ${{ steps.ios_upload.outputs.ipa_path }}"
-          echo "Upload ID: ${{ steps.ios_upload.outputs.upload_id }}"
 ```
+
+## Setup CLI Commands
+
+```bash
+ios-gha-setup wizard
+ios-gha-setup check --repo owner/repo
+ios-gha-setup apply --repo owner/repo --workspace ios/App.xcworkspace --scheme App --bundle-id com.example.app --team-id TEAMID --app-id 123456789 --asc-key-id KEYID --asc-issuer-id ISSUER --p8-path ~/AuthKey_KEYID.p8
+ios-gha-setup doctor
+ios-gha-setup version
+```
+
+## Security Notes
+
+- Cloud signing requires an API key with **Admin** role.
+- Generated workflow templates intentionally use `vinceglb/ios-archive-upload-asc@main` for simplicity.
+- Tradeoff: `@main` is less reproducible than pinning to a commit SHA.
+- Wizard resume state stores only non-sensitive fields in `~/.local/state/ios-gha-setup/session.json`.
 
 ## Troubleshooting
 
-- `asc upload failed`
-  - Verify `asc_key_id`, `asc_issuer_id`, `asc_private_key_b64`.
-  - Verify API key permissions in App Store Connect.
-- Signing/provisioning failures during archive/export
-  - Confirm automatic signing is enabled for the target and `asc_team_id` is correct.
-  - Confirm bundle ID is registered under the team.
-  - If you see `Cloud signing permission error`, use an App Store Connect API key with **Admin** permissions.
-- `Bundle ID mismatch`
-  - The archive’s bundle identifier does not match `bundle_id`.
-  - Check the scheme/target and input value.
-- Upload succeeds locally but not in CI
-  - Ensure the runner is macOS with compatible Xcode and network access to App Store Connect.
+- `Cloud signing permission error`
+  - Use an App Store Connect API key with **Admin** role.
+- ASC auth validation failure in setup CLI
+  - Re-check Key ID, Issuer ID, and `.p8` content.
+- `gh` unavailable or unauthenticated
+  - Wizard falls back to manual value output; run `gh auth login` to enable direct sync.
+- Bundle ID mismatch in action runtime
+  - Check `scheme` and `bundle_id` inputs.

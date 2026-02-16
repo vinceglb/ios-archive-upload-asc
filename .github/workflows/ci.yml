@@ -15,13 +15,17 @@ jobs:
       - name: Validate scripts syntax
         run: |
           bash -n scripts/install-asc.sh
+          bash -n scripts/install-ios-gha-setup.sh
           bash -n scripts/run.sh
+          bash -n scripts/ios-gha-setup.sh
 
       - name: Validate YAML syntax
         run: |
           ruby -e "require 'yaml'; YAML.load_file('action.yml')"
           ruby -e "require 'yaml'; YAML.load_file('.github/workflows/ci.yml')"
           ruby -e "require 'yaml'; YAML.load_file('.github/workflows/smoke.yml')"
+          ruby -e "require 'yaml'; YAML.load_file('templates/workflows/ios-build.yml.tpl')"
+          ruby -e "require 'yaml'; YAML.load_file('templates/workflows/ios-deploy.yml.tpl')"
 
       - name: Check required action metadata
         run: |
