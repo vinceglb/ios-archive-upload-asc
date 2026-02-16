@@ -103,7 +103,7 @@ if [[ "${INPUT_WORKSPACE}" != *.xcworkspace && "${INPUT_WORKSPACE}" != *.xcworks
 fi
 
 runner_temp="${RUNNER_TEMP:-/tmp}"
-tmp_dir="$(mktemp -d "${runner_temp}/ios-archive-upload-asc.XXXXXX")"
+tmp_dir="$(mktemp -d "${runner_temp}/releasekit-ios.XXXXXX")"
 private_key_path="${tmp_dir}/AuthKey.p8"
 result_json_path="${tmp_dir}/asc-upload-result.json"
 export_options_path="${tmp_dir}/ExportOptions.plist"

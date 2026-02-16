@@ -4,7 +4,7 @@ This guide walks through creating an App Store Connect API key for GitHub Action
 
 ## Why this key matters
 
-`ios-archive-upload-asc` uses this key to:
+`ReleaseKit-iOS` uses this key to:
 - authenticate with App Store Connect
 - support cloud signing/export (`xcodebuild -allowProvisioningUpdates`)
 - upload builds via `asc`

@@ -1,22 +1,22 @@
-# ios-archive-upload-asc
+# ReleaseKit-iOS
 
-Composite GitHub Action to archive an iOS app, export an `.ipa`, and upload it to App Store Connect using [`asc`](https://github.com/rudrankriyam/App-Store-Connect-CLI).
+ReleaseKit-iOS is a composite GitHub Action that archives an iOS app, exports an `.ipa`, and uploads it to App Store Connect using [`asc`](https://github.com/rudrankriyam/App-Store-Connect-CLI).
 
 ## Quick Start (5 minutes)
 
 1. Create an App Store Connect API key (Admin role for cloud signing)
 - Guide: [`docs/app-store-connect-api-key.md`](docs/app-store-connect-api-key.md)
 
-2. Install setup CLI globally
+2. Install the setup CLI globally
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/vinceglb/ios-archive-upload-asc/main/scripts/install-ios-gha-setup.sh | sh
+curl -fsSL https://raw.githubusercontent.com/vinceglb/releasekit-ios/main/scripts/install-releasekit-ios-setup.sh | sh
 ```
 
 3. Run guided onboarding from your app repository
 
 ```bash
-ios-gha-setup wizard
+releasekit-ios-setup wizard
 ```
 
 The wizard guides step-by-step, auto-prefills from local git/Xcode context, validates ASC credentials, and can resume interrupted setup without persisting secrets.
@@ -24,7 +24,7 @@ The wizard guides step-by-step, auto-prefills from local git/Xcode context, vali
 ## DX Setup Docs
 
 - API key creation guide: [`docs/app-store-connect-api-key.md`](docs/app-store-connect-api-key.md)
-- Setup CLI guide: [`docs/ios-gha-setup.md`](docs/ios-gha-setup.md)
+- Setup CLI guide: [`docs/releasekit-ios-setup.md`](docs/releasekit-ios-setup.md)
 
 ## Requirements
 
@@ -84,9 +84,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Archive, export and upload
+      - name: ReleaseKit-iOS archive, export and upload
         id: ios_upload
-        uses: vinceglb/ios-archive-upload-asc@main
+        uses: vinceglb/releasekit-ios@main
         with:
           workspace: ios/App.xcworkspace
           scheme: App
@@ -102,19 +102,23 @@ jobs:
 ## Setup CLI Commands
 
 ```bash
-ios-gha-setup wizard
-ios-gha-setup check --repo owner/repo
-ios-gha-setup apply --repo owner/repo --workspace ios/App.xcworkspace --scheme App --bundle-id com.example.app --team-id TEAMID --app-id 123456789 --asc-key-id KEYID --asc-issuer-id ISSUER --p8-path ~/AuthKey_KEYID.p8
-ios-gha-setup doctor
-ios-gha-setup version
+releasekit-ios-setup wizard
+releasekit-ios-setup check --repo owner/repo
+releasekit-ios-setup apply --repo owner/repo --workspace ios/App.xcworkspace --scheme App --bundle-id com.example.app --team-id TEAMID --app-id 123456789 --asc-key-id KEYID --asc-issuer-id ISSUER --p8-path ~/AuthKey_KEYID.p8
+releasekit-ios-setup doctor
+releasekit-ios-setup version
 ```
+
+Legacy aliases are still available for compatibility:
+- `ios-gha-setup` -> `releasekit-ios-setup`
+- `install-ios-gha-setup.sh` -> `install-releasekit-ios-setup.sh`
 
 ## Security Notes
 
 - Cloud signing requires an API key with **Admin** role.
-- Generated workflow templates intentionally use `vinceglb/ios-archive-upload-asc@main` for simplicity.
+- Generated workflow templates intentionally use `vinceglb/releasekit-ios@main` for simplicity.
 - Tradeoff: `@main` is less reproducible than pinning to a commit SHA.
-- Wizard resume state stores only non-sensitive fields in `~/.local/state/ios-gha-setup/session.json`.
+- Wizard resume state stores only non-sensitive fields in `~/.local/state/releasekit-ios-setup/session.json`.
 
 ## Troubleshooting
 

@@ -44,9 +44,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Archive, export, and upload to ASC
+      - name: ReleaseKit-iOS archive, export, and upload
         id: ios_upload
-        uses: vinceglb/ios-archive-upload-asc@__ACTION_REF__
+        uses: vinceglb/releasekit-ios@__ACTION_REF__
         with:
           workspace: ${{ env.WORKSPACE }}
           scheme: ${{ env.SCHEME }}

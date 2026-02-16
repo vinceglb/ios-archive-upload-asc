@@ -1,6 +1,6 @@
-name: iOS Archive Upload ASC
-description: Archive an iOS app, export an IPA, and upload it to App Store Connect using asc CLI.
-author: ga-vince
+name: ReleaseKit-iOS
+description: ReleaseKit-iOS action to archive an app, export an IPA, and upload to App Store Connect with asc.
+author: vinceglb
 
 inputs:
   workspace:
@@ -82,7 +82,7 @@ runs:
       env:
         INPUT_ASC_VERSION: ${{ inputs.asc_version }}
 
-    - name: Archive, export, and upload
+    - name: ReleaseKit-iOS archive, export, and upload
       id: run
       shell: bash
       run: ${{ github.action_path }}/scripts/run.sh
