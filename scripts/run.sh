@@ -132,9 +132,11 @@ cat > "${export_options_path}" <<EOF
 <plist version="1.0">
 <dict>
   <key>method</key>
-  <string>app-store</string>
+  <string>app-store-connect</string>
   <key>signingStyle</key>
   <string>automatic</string>
+  <key>signingCertificate</key>
+  <string>Apple Distribution</string>
   <key>teamID</key>
   <string>$(escape_plist_string "${INPUT_ASC_TEAM_ID}")</string>
 </dict>
