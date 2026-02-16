@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  lint-and-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate scripts syntax
+        run: |
+          bash -n scripts/install-asc.sh
+          bash -n scripts/run.sh
+
+      - name: Validate YAML syntax
+        run: |
+          ruby -e "require 'yaml'; YAML.load_file('action.yml')"
+          ruby -e "require 'yaml'; YAML.load_file('.github/workflows/ci.yml')"
+          ruby -e "require 'yaml'; YAML.load_file('.github/workflows/smoke.yml')"
+
+      - name: Check required action metadata
+        run: |
+          grep -q '^runs:' action.yml
+          grep -q 'using: composite' action.yml
+          grep -q '^inputs:' action.yml
+          grep -q '^outputs:' action.yml

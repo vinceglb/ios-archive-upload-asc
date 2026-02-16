@@ -1,0 +1,146 @@
+name: Smoke
+
+on:
+  workflow_dispatch:
+    inputs:
+      scenario:
+        description: Scenario to run.
+        type: choice
+        required: true
+        default: missing-app-id
+        options:
+          - missing-app-id
+          - invalid-key-b64
+          - happy-path
+          - bundle-mismatch
+          - bad-app-id
+      workspace:
+        description: Workspace path used for E2E scenarios.
+        required: false
+        default: ""
+      scheme:
+        description: Scheme used for E2E scenarios.
+        required: false
+        default: ""
+      app_id:
+        description: App Store Connect app ID (for happy-path and mismatch scenarios).
+        required: false
+        default: ""
+      bundle_id:
+        description: Expected bundle ID (for happy-path and bad-app-id scenarios).
+        required: false
+        default: ""
+      asc_team_id:
+        description: Team ID for Xcode signing/export.
+        required: false
+        default: ""
+      configuration:
+        description: Build configuration.
+        required: false
+        default: Release
+      xcodebuild_extra_args:
+        description: Extra xcodebuild archive args.
+        required: false
+        default: ""
+
+jobs:
+  local-negative-tests:
+    if: ${{ inputs.scenario == 'missing-app-id' || inputs.scenario == 'invalid-key-b64' }}
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Make fake workspace
+        run: mkdir -p FakeApp.xcworkspace
+
+      - name: Scenario missing-app-id
+        id: missing_app_id
+        if: ${{ inputs.scenario == 'missing-app-id' }}
+        continue-on-error: true
+        run: scripts/run.sh
+        env:
+          INPUT_WORKSPACE: FakeApp.xcworkspace
+          INPUT_SCHEME: FakeScheme
+          INPUT_APP_ID: ""
+          INPUT_BUNDLE_ID: com.example.app
+          INPUT_ASC_KEY_ID: KEYID123
+          INPUT_ASC_ISSUER_ID: ISSUER123
+          INPUT_ASC_PRIVATE_KEY_B64: Zm9v
+          INPUT_ASC_TEAM_ID: TEAM12345
+          INPUT_CONFIGURATION: Release
+          INPUT_ARCHIVE_PATH: ${{ runner.temp }}/archive/App.xcarchive
+          INPUT_EXPORT_PATH: ${{ runner.temp }}/export
+          INPUT_WAIT_FOR_PROCESSING: "false"
+          INPUT_POLL_INTERVAL: 30s
+          INPUT_XCODEBUILD_EXTRA_ARGS: ""
+
+      - name: Assert missing-app-id failed
+        if: ${{ inputs.scenario == 'missing-app-id' }}
+        run: |
+          if [[ "${{ steps.missing_app_id.outcome }}" != "failure" ]]; then
+            echo "Expected missing-app-id scenario to fail."
+            exit 1
+          fi
+
+      - name: Scenario invalid-key-b64
+        id: invalid_key
+        if: ${{ inputs.scenario == 'invalid-key-b64' }}
+        continue-on-error: true
+        run: scripts/run.sh
+        env:
+          INPUT_WORKSPACE: FakeApp.xcworkspace
+          INPUT_SCHEME: FakeScheme
+          INPUT_APP_ID: "123456789"
+          INPUT_BUNDLE_ID: com.example.app
+          INPUT_ASC_KEY_ID: KEYID123
+          INPUT_ASC_ISSUER_ID: ISSUER123
+          INPUT_ASC_PRIVATE_KEY_B64: "###-NOT-BASE64-###"
+          INPUT_ASC_TEAM_ID: TEAM12345
+          INPUT_CONFIGURATION: Release
+          INPUT_ARCHIVE_PATH: ${{ runner.temp }}/archive/App.xcarchive
+          INPUT_EXPORT_PATH: ${{ runner.temp }}/export
+          INPUT_WAIT_FOR_PROCESSING: "false"
+          INPUT_POLL_INTERVAL: 30s
+          INPUT_XCODEBUILD_EXTRA_ARGS: ""
+
+      - name: Assert invalid-key-b64 failed
+        if: ${{ inputs.scenario == 'invalid-key-b64' }}
+        run: |
+          if [[ "${{ steps.invalid_key.outcome }}" != "failure" ]]; then
+            echo "Expected invalid-key-b64 scenario to fail."
+            exit 1
+          fi
+
+  e2e:
+    if: ${{ inputs.scenario == 'happy-path' || inputs.scenario == 'bundle-mismatch' || inputs.scenario == 'bad-app-id' }}
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run action (scenario-dependent expectation)
+        id: action_run
+        continue-on-error: true
+        uses: ./
+        with:
+          workspace: ${{ inputs.workspace }}
+          scheme: ${{ inputs.scheme }}
+          app_id: ${{ inputs.scenario == 'bad-app-id' && '0000000000' || inputs.app_id }}
+          bundle_id: ${{ inputs.scenario == 'bundle-mismatch' && format('{0}.mismatch', inputs.bundle_id) || inputs.bundle_id }}
+          asc_key_id: ${{ secrets.ASC_KEY_ID }}
+          asc_issuer_id: ${{ secrets.ASC_ISSUER_ID }}
+          asc_private_key_b64: ${{ secrets.ASC_PRIVATE_KEY_B64 }}
+          asc_team_id: ${{ inputs.asc_team_id }}
+          configuration: ${{ inputs.configuration }}
+          xcodebuild_extra_args: ${{ inputs.xcodebuild_extra_args }}
+          wait_for_processing: "false"
+
+      - name: Assert scenario result
+        run: |
+          outcome="${{ steps.action_run.outcome }}"
+          scenario="${{ inputs.scenario }}"
+
+          if [[ "${scenario}" == "happy-path" ]]; then
+            [[ "${outcome}" == "success" ]] || { echo "Happy path should succeed."; exit 1; }
+          else
+            [[ "${outcome}" == "failure" ]] || { echo "${scenario} should fail."; exit 1; }
+          fi
