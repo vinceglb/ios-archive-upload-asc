@@ -14,8 +14,8 @@ jobs:
 
       - name: Validate scripts syntax
         run: |
-          bash -n scripts/install-asc.sh
           bash -n scripts/install-releasekit-ios-setup.sh
+          bash -n scripts/prepare-releasekit-ios-setup-release.sh
           bash -n scripts/archive.sh
           bash -n scripts/upload.sh
           bash -n scripts/lib/common.sh
