@@ -5,8 +5,8 @@ on:
     tags:
       - "v*"
 
-# permissions:
-#   contents: write
+permissions:
+  contents: write
 
 concurrency:
   group: release-cli-${{ github.ref_name }}
