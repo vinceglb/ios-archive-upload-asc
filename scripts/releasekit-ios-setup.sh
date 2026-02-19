@@ -1060,7 +1060,7 @@ jobs:
 
       - name: Set artifact metadata
         id: artifact_meta
-        run: echo "name=Marmalade.ipa" >> "$GITHUB_OUTPUT"
+        run: echo "name=${{ env.SCHEME }}.ipa" >> "$GITHUB_OUTPUT"
 
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v6

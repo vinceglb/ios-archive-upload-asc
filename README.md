@@ -103,7 +103,7 @@ Optional:
     asc_key_id: ${{ secrets.ASC_KEY_ID }}
     asc_issuer_id: ${{ secrets.ASC_ISSUER_ID }}
     asc_private_key_b64: ${{ secrets.ASC_PRIVATE_KEY_B64 }}
-    artifact_name: Marmalade.ipa
+    artifact_name: App.ipa
     artifact_download_path: ${{ runner.temp }}/releasekit-upload
     wait_for_processing: "false"
 ```
@@ -158,7 +158,7 @@ jobs:
           asc_team_id: ${{ vars.ASC_TEAM_ID }}
       - uses: actions/upload-artifact@v6
         with:
-          name: Marmalade.ipa
+          name: App.ipa
           path: ${{ steps.ios_archive.outputs.ipa_path }}
 
   upload:
@@ -172,7 +172,7 @@ jobs:
           asc_key_id: ${{ secrets.ASC_KEY_ID }}
           asc_issuer_id: ${{ secrets.ASC_ISSUER_ID }}
           asc_private_key_b64: ${{ secrets.ASC_PRIVATE_KEY_B64 }}
-          artifact_name: Marmalade.ipa
+          artifact_name: App.ipa
           wait_for_processing: "false"
 ```
 
