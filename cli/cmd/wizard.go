@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/vinceglb/releasekit-ios/cli/releasekit-ios-go/internal/wizard"
+	"github.com/vinceglb/releasekit-ios/cli/internal/wizard"
 )
 
 func newWizardCmd() *cobra.Command {

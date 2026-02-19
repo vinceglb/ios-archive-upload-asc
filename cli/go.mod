@@ -1,4 +1,4 @@
-module github.com/vinceglb/releasekit-ios/cli/releasekit-ios-go
+module github.com/vinceglb/releasekit-ios/cli
 
 go 1.24
 

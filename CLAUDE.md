@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ReleaseKit-iOS is a GitHub Actions-based CI/CD toolkit for distributing iOS apps to the App Store. It provides:
 - **Two composite GitHub Actions** (`actions/archive/`, `actions/upload/`) that wrap Xcode and the `asc` CLI
-- **A Go CLI wizard** (`cli/releasekit-ios-go/`) that guides developers through initial setup
+- **A Go CLI wizard** (`cli/`) that guides developers through initial setup
 - **Bash scripts** (`scripts/`) that implement the archive/upload logic
 - **An installer script** (`install-cli.sh`) for end-user CLI installation
 
@@ -14,7 +14,7 @@ The key design: App Store Connect API handles cloud signing, so no local certifi
 
 ## Commands
 
-### Go CLI (from `cli/releasekit-ios-go/`)
+### Go CLI (from `cli/`)
 
 ```bash
 go test ./...             # Run unit tests
@@ -59,7 +59,7 @@ The composite actions (`actions/archive/action.yml`, `actions/upload/action.yml`
 
 Styling lives in `internal/term/style.go` (lipgloss-based `Theme` struct).
 
-The CLI's module path is `github.com/vinceglb/releasekit-ios/cli/releasekit-ios-go`.
+The CLI's module path is `github.com/vinceglb/releasekit-ios/cli`.
 
 ### Release Process
 

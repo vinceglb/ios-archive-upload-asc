@@ -15,20 +15,17 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version-file: cli/releasekit-ios-go/go.mod
+          go-version-file: cli/go.mod
 
       - name: Validate scripts syntax
         run: |
-          bash -n scripts/install-releasekit-ios-setup.sh
-          bash -n scripts/install-releasekit-ios.sh
-          bash -n scripts/prepare-releasekit-ios-setup-release.sh
+          bash -n install-cli.sh
           bash -n scripts/archive.sh
           bash -n scripts/upload.sh
           bash -n scripts/lib/common.sh
-          bash -n scripts/releasekit-ios-setup.sh
 
       - name: Run Go tests
-        working-directory: cli/releasekit-ios-go
+        working-directory: cli
         run: go test ./...
 
       - name: Validate YAML syntax
@@ -36,7 +33,6 @@ jobs:
           ruby -e "require 'yaml'; YAML.load_file('actions/archive/action.yml')"
           ruby -e "require 'yaml'; YAML.load_file('actions/upload/action.yml')"
           ruby -e "require 'yaml'; YAML.load_file('.github/workflows/ci.yml')"
-          ruby -e "require 'yaml'; YAML.load_file('.github/workflows/release.yml')"
           ruby -e "require 'yaml'; YAML.load_file('.github/workflows/release-cli-beta.yml')"
           ruby -e "require 'yaml'; YAML.load_file('.github/workflows/smoke.yml')"
 

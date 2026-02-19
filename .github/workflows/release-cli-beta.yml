@@ -21,7 +21,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version-file: cli/releasekit-ios-go/go.mod
+          go-version-file: cli/go.mod
 
       - name: Test CLI module
         working-directory: cli/releasekit-ios-go
@@ -60,6 +60,6 @@ jobs:
           generate_release_notes: true
           prerelease: false
           files: |
-            cli/releasekit-ios-go/dist/releasekit-ios-darwin-arm64.tar.gz
-            cli/releasekit-ios-go/dist/releasekit-ios-darwin-amd64.tar.gz
+            cli/dist/releasekit-ios-darwin-arm64.tar.gz
+            cli/dist/releasekit-ios-darwin-amd64.tar.gz
           fail_on_unmatched_files: true

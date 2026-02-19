@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/vinceglb/releasekit-ios/cli/releasekit-ios-go/internal/term"
+	"github.com/vinceglb/releasekit-ios/cli/internal/term"
 )
 
 func printSummary(out io.Writer, theme term.Theme, inputs Inputs) {

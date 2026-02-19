@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/vinceglb/releasekit-ios/cli/releasekit-ios-go/cmd"
-	"github.com/vinceglb/releasekit-ios/cli/releasekit-ios-go/internal/term"
+	"github.com/vinceglb/releasekit-ios/cli/cmd"
+	"github.com/vinceglb/releasekit-ios/cli/internal/term"
 )
 
 func main() {
