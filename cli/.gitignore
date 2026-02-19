@@ -1,0 +1,5 @@
+releasekit-ios
+dist/
+*.test
+coverage.txt
+cover.out

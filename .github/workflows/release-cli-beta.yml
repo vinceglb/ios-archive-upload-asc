@@ -15,6 +15,7 @@ concurrency:
 jobs:
   release-cli:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v6
 
@@ -23,8 +24,12 @@ jobs:
         with:
           go-version-file: cli/go.mod
 
+      - name: Vet CLI module
+        working-directory: cli
+        run: go vet ./...
+
       - name: Test CLI module
-        working-directory: cli/releasekit-ios-go
+        working-directory: cli
         run: go test ./...
 
       - name: Validate CLI tag format
@@ -39,15 +44,18 @@ jobs:
 
       - name: Build macOS binaries
         shell: bash
-        working-directory: cli/releasekit-ios-go
+        working-directory: cli
         run: |
           set -euo pipefail
 
           mkdir -p dist/releasekit-ios-darwin-arm64
           mkdir -p dist/releasekit-ios-darwin-amd64
 
-          CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -trimpath -ldflags='-s -w' -o dist/releasekit-ios-darwin-arm64/releasekit-ios .
-          CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -trimpath -ldflags='-s -w' -o dist/releasekit-ios-darwin-amd64/releasekit-ios .
+          BUILD_DATE="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          LDFLAGS="-s -w -X github.com/vinceglb/releasekit-ios/cli/internal/version.Version=${GITHUB_REF_NAME} -X github.com/vinceglb/releasekit-ios/cli/internal/version.Commit=${GITHUB_SHA} -X github.com/vinceglb/releasekit-ios/cli/internal/version.BuildDate=${BUILD_DATE}"
+
+          CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -trimpath -ldflags "${LDFLAGS}" -o dist/releasekit-ios-darwin-arm64/releasekit-ios .
+          CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -trimpath -ldflags "${LDFLAGS}" -o dist/releasekit-ios-darwin-amd64/releasekit-ios .
 
           tar -C dist/releasekit-ios-darwin-arm64 -czf dist/releasekit-ios-darwin-arm64.tar.gz releasekit-ios
           tar -C dist/releasekit-ios-darwin-amd64 -czf dist/releasekit-ios-darwin-amd64.tar.gz releasekit-ios

@@ -13,7 +13,7 @@ if [[ $# -gt 0 ]]; then
       ;;
     -h|--help)
       cat <<USAGE
-Usage: install-releasekit-ios.sh [--version <latest|vX.Y[.Z][-suffix]>]
+Usage: install-cli.sh [--version <latest|vX.Y[.Z][-suffix]>]
 
 Environment variables:
   RELEASEKIT_IOS_VERSION   Version tag to install (default: latest)

@@ -13,7 +13,7 @@ The wizard is built with Cobra + Charm (`huh`, `lipgloss`) and focuses on collec
 From repository root:
 
 ```bash
-cd cli/releasekit-ios-go
+cd cli
 go test ./...
 go run . wizard
 ```
@@ -21,9 +21,16 @@ go run . wizard
 ## Build locally
 
 ```bash
-cd cli/releasekit-ios-go
+cd cli
 go build -o releasekit-ios .
 ./releasekit-ios wizard
+```
+
+## Show version information
+
+```bash
+cd cli
+go run . version
 ```
 
 ## Install from GitHub release
@@ -31,13 +38,13 @@ go build -o releasekit-ios .
 Latest stable:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/vinceglb/releasekit-ios/main/scripts/install-releasekit-ios.sh | sh
+curl -fsSL https://raw.githubusercontent.com/vinceglb/releasekit-ios/main/install-cli.sh | sh
 ```
 
 Pinned version:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/vinceglb/releasekit-ios/main/scripts/install-releasekit-ios.sh | sh -s -- --version v0.1.0
+curl -fsSL https://raw.githubusercontent.com/vinceglb/releasekit-ios/main/install-cli.sh | sh -s -- --version v0.1.0
 ```
 
 ## Release flow
@@ -51,7 +58,7 @@ Workflow: `.github/workflows/release-cli-beta.yml`
 
 ## Deferred scope
 
-- `check`, `apply`, `doctor`, `version`
+- `check`, `apply`, `doctor`
 - GitHub sync via `gh`
 - ASC API validation
 - Workflow file generation
