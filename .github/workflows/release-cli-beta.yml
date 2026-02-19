@@ -1,0 +1,65 @@
+name: Release CLI
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-cli-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  release-cli:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: cli/releasekit-ios-go/go.mod
+
+      - name: Test CLI module
+        working-directory: cli/releasekit-ios-go
+        run: go test ./...
+
+      - name: Validate CLI tag format
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG="${GITHUB_REF_NAME}"
+          if [[ ! "${TAG}" =~ ^v([0-9]+)\.([0-9]+)(\.([0-9]+))?([-.].*)?$ ]]; then
+            echo "Tag must match vX.Y or vX.Y.Z with optional suffix. Got: ${TAG}" >&2
+            exit 1
+          fi
+
+      - name: Build macOS binaries
+        shell: bash
+        working-directory: cli/releasekit-ios-go
+        run: |
+          set -euo pipefail
+
+          mkdir -p dist/releasekit-ios-darwin-arm64
+          mkdir -p dist/releasekit-ios-darwin-amd64
+
+          CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -trimpath -ldflags='-s -w' -o dist/releasekit-ios-darwin-arm64/releasekit-ios .
+          CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -trimpath -ldflags='-s -w' -o dist/releasekit-ios-darwin-amd64/releasekit-ios .
+
+          tar -C dist/releasekit-ios-darwin-arm64 -czf dist/releasekit-ios-darwin-arm64.tar.gz releasekit-ios
+          tar -C dist/releasekit-ios-darwin-amd64 -czf dist/releasekit-ios-darwin-amd64.tar.gz releasekit-ios
+
+      - name: Create or update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ReleaseKit-iOS CLI ${{ github.ref_name }}
+          generate_release_notes: true
+          prerelease: false
+          files: |
+            cli/releasekit-ios-go/dist/releasekit-ios-darwin-arm64.tar.gz
+            cli/releasekit-ios-go/dist/releasekit-ios-darwin-amd64.tar.gz
+          fail_on_unmatched_files: true
