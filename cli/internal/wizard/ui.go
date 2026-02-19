@@ -24,7 +24,7 @@ func collectPhase1ASCCredentials() (issuerID, keyID, privKeyB64 string, err erro
 				Title("App Store Connect API Key").
 				Description(
 					"1. Go to appstoreconnect.apple.com → Users → Integrations → API Keys\n" +
-						"2. Create a key with App Manager role\n" +
+						"2. Create a key with \"Developer\" role (required for signing)\n" +
 						"3. Download the .p8 file — only downloadable once\n" +
 						"4. Note the Key ID and Issuer ID shown on that page",
 				),
