@@ -9,6 +9,7 @@ type Theme struct {
 	valueStyle   lipgloss.Style
 	mutedStyle   lipgloss.Style
 	errorStyle   lipgloss.Style
+	successStyle lipgloss.Style
 }
 
 func NewTheme() Theme {
@@ -19,6 +20,7 @@ func NewTheme() Theme {
 		valueStyle:   lipgloss.NewStyle().Foreground(lipgloss.Color("252")),
 		mutedStyle:   lipgloss.NewStyle().Foreground(lipgloss.Color("241")),
 		errorStyle:   lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("196")),
+		successStyle: lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("82")),
 	}
 }
 
@@ -44,4 +46,8 @@ func (t Theme) Muted(value string) string {
 
 func (t Theme) Error(value string) string {
 	return t.errorStyle.Render("[error] " + value)
+}
+
+func (t Theme) Success(value string) string {
+	return t.successStyle.Render(value)
 }
