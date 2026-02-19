@@ -179,7 +179,7 @@ jobs:
 ## Security Notes
 
 - Cloud signing requires an API key with **Admin** role.
-- Generated templates use `@v1`; pin a full tag/SHA for stricter reproducibility.
+- Generated templates use `@v0`; pin a full tag/SHA for stricter reproducibility.
 
 ## Publishing a Release
 
