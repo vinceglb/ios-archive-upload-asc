@@ -20,6 +20,7 @@ jobs:
         uses: actions/setup-go@v6
         with:
           go-version-file: cli/go.mod
+          cache-dependency-path: cli/go.sum
 
       - name: Validate scripts syntax
         run: |
